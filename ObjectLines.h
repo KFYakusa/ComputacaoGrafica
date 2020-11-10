@@ -9,7 +9,7 @@ class ObjectLines : public Object
 public:
     ObjectLines();
     
-    void create( unsigned int vtsVerticePtr);
+    void create( unsigned int vtsVerticePtr, int gridSize);
 
     void render();
     void deleteVAOVBOs();

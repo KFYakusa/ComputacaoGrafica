@@ -63,7 +63,7 @@ void guiNewFrame();
 void guiRender();
 
 
-void ReadPLY(std::vector<ObjectArray> *objects, GLuint *vtsVerticePtr, string nomeImagem,Vector3f position,Vector3f colorParameter=Vector3f(1.0f,0.0f,1.0f)){
+void ReadPLY(std::vector<ObjectArray> *objects, GLuint *vtsVerticePtr, string nomeImagem,Vector3f position,Vector3f colorParameter){
 	float dadosV[12];
 	float dadosF[4];
 	int nVertex;
@@ -111,7 +111,6 @@ void ReadPLY(std::vector<ObjectArray> *objects, GLuint *vtsVerticePtr, string no
 					cin>>dadosF[i];
 					if(i>0){
 						vertices.push_back(auxV[dadosF[i]]);
-						
 					}
 				}
 				nFaces--;
@@ -124,11 +123,11 @@ void ReadPLY(std::vector<ObjectArray> *objects, GLuint *vtsVerticePtr, string no
 
 	// create the object
 	
-	ObjectArray obj1;
-	obj1.create(vertices, *vtsVerticePtr);
-	obj1.setPosition(position);
-	obj1.setColor(colorParameter);
-	objects->push_back(obj1); //add 
+	ObjectArray objPLY;
+	objPLY.create(vertices, *vtsVerticePtr);
+	objPLY.setPosition(position);
+	objPLY.setColor(colorParameter);
+	objects->push_back(objPLY); //add 
 	return;
 };
 
@@ -198,12 +197,12 @@ void ReadPLYWcolor(std::vector<ObjectPLY> *objects, GLuint *vtsVerticePtr, GLint
 	file.close();
 	std::cin.rdbuf(cinbuf);
 
-	// create the object
 	
-	ObjectPLY obj1;
-	obj1.create(vertices, *vtsVerticePtr,*vtsColorPtr,cor);
-	obj1.setPosition(position);
-	objects->push_back(obj1); //add 
+	// create the object
+	ObjectPLY objPLYWcolor;
+	objPLYWcolor.create(vertices, *vtsVerticePtr,*vtsColorPtr,cor);
+	objPLYWcolor.setPosition(position);
+	objects->push_back(objPLYWcolor); //add 
 	return;
 
 };
@@ -272,9 +271,14 @@ int main(void) {
 	std::vector<ObjectPLY> *objectsWcolor = scene->getScenePLYObjects();
 	
 	//cria os vértices dos objetos cubo, torus e plano
-	ReadPLYWcolor(objectsWcolor,&vtsVerticePtr, &vtsColorPtr,"sun.ply",Vector3f(0.0f, 2.0f, 0.0) );
-	ReadPLYWcolor(objectsWcolor,&vtsVerticePtr, &vtsColorPtr,"mercury.ply",Vector3f(2.0f, 0.0f, 0.0));
-	ReadPLY(objects,&vtsVerticePtr, "cubo.ply", Vector3f(-3.0f, 0.0f, 0.0), Vector3f(0.0f,1.0f,1.0f));
+	ReadPLYWcolor(objectsWcolor,&vtsVerticePtr, &vtsColorPtr,"sun.ply",		Vector3f(0.0f, 2.0f, 0.0));
+	ReadPLYWcolor(objectsWcolor,&vtsVerticePtr, &vtsColorPtr,"mercury.ply",	Vector3f(2.0f, 0.0f, 0.0));
+	ReadPLY(objects,&vtsVerticePtr, "cubo.ply", Vector3f(-3.0f, 0.0f, 0.0), Vector3f(0.0f, 1.0f, 1.0f));
+	
+	
+	scene->getFloor()->create(vtsVerticePtr,40);
+	scene->getFloor()->setPosition(Vector3f(0.0f, -1.0f, -10.0f));
+	scene->getFloor()->setColor(Vector3f(0.0f, 0.5f, 0.25f));
 	
 	
 	//LOOP de renderização. A cada passada, um quadro é renderizo!
@@ -291,6 +295,9 @@ int main(void) {
 	//remove VAO e VBOs alocados para os objetos
 	for(size_t i=0; i<objects->size(); i++)
 		objects->at(i).deleteVAOVBOs();
+
+	for(size_t i=0; i<objectsWcolor->size(); i++)
+		objectsWcolor->at(i).deleteVAOVBOs();
 		
 
 	//remove os shaders
@@ -401,7 +408,7 @@ void render(){
 	
 
 	// cena sem cores
-{
+	{
 		std::vector<ObjectArray> *objects = Scene::getInstance()->getSceneObjects();
 		program = Scene::getInstance()->getSeneShaderPrograms()->at(0);
 		//especifica os shaders que serão usados na renderização
@@ -409,7 +416,7 @@ void render(){
 		
 		//le o endereço de memória das variáveis do vertexshader: cor e PVM
 		matPVMRef = glGetUniformLocation(program, "PVM");
-		// corRef = glGetUniformLocation(program, "cor");
+		corRef = glGetUniformLocation(program, "cor");
 
 		//chao
 		ObjectLines *floor = Scene::getInstance()->getFloor();
@@ -421,7 +428,7 @@ void render(){
 
 		//animação do objeto atual
 		int currentObjectID = Scene::getInstance()->getCurrentObjectID();
-		R = objects->at(currentObjectID).getRotation() * Math::zRotationMat(0.01f);
+		R = objects->at(currentObjectID).getRotation() * Math::yRotationMat(0.01f);
 		objects->at(currentObjectID).setRotation(R);
 
 		//renderização de todos os objetos
@@ -443,30 +450,33 @@ void render(){
 	{
 		std::vector<ObjectPLY> *objectsWcolor = Scene::getInstance()->getScenePLYObjects();
 		program = Scene::getInstance()->getSeneShaderPrograms()->at(1);
+		
 		//especifica os shaders que serão usados na renderização
 		glUseProgram(program);
 		
 		//le o endereço de memória das variáveis do vertexshader: cor e PVM
 		matPVMRef = glGetUniformLocation(program, "PVM");
-		corRef = glGetUniformLocation(program, "cor");
+		// corRef = glGetUniformLocation(program, "cor");
 
 
 		//animação do objeto atual
 		int currentObjectID = Scene::getInstance()->getCurrentObjectID();
-		R = objectsWcolor->at(currentObjectID).getRotation() * Math::zRotationMat(0.01f);
+		R = objectsWcolor->at(currentObjectID).getRotation() * Math::yRotationMat(0.01f);
 		objectsWcolor->at(currentObjectID).setRotation(R);
+		
 
 		MercurioTransform = objectsWcolor->at(1).getEscale() * Math::scaleMat(Vector3f(0.5f,0.5f,0.5f)) * Math::translationMat(Vector3f(2.5f,2.5f,0.0f)); 
 		objectsWcolor->at(1).setRotation(MercurioTransform);
+		objectsWcolor->at(1).render();
 
 
 		//renderização de todos os objetos
 		for(size_t i = 0; i<objectsWcolor->size(); i++){
 			
 			matPVM = PV * objectsWcolor->at(i).getTranslation() * objectsWcolor->at(i).getRotation() * objectsWcolor->at(i).getEscale();	
-
+			cout<<"currentObjectId"<<i<<endl;
 			glUniformMatrix4fv(matPVMRef, 1, GL_FALSE, matPVM.data());
-			glUniform3fv(corRef, 1, objectsWcolor->at(i).getColor().data());
+			// glUniform3fv(corRef, 1, objectsWcolor->at(i).getColor().data());
 			objectsWcolor->at(i).render();
 		}
 

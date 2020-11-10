@@ -80,7 +80,6 @@ std::vector<ObjectArray>* Scene::getSceneObjects(){
     return &objects;
 }
 
-
 std::vector<ObjectPLY>* Scene::getScenePLYObjects(){
     return &objectsPLY;
 }

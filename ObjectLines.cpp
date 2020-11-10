@@ -27,18 +27,28 @@ void ObjectLines::deleteVAOVBOs(){
     vertVBO =0;
 }
 
-void ObjectLines::create(unsigned int vtsVerticePtr){
+void ObjectLines::create(unsigned int vtsVerticePtr,int gridSize){
     
 	vector<Vector3f> vertices;
     
-	//primeira Linha
-	vertices.push_back(Vector3f(20.0f, 0.0f, -5.0f));
-	vertices.push_back(Vector3f(-20.0f, 0.0f, -5.0f));
+	// //primeira Linha
+	// vertices.push_back(Vector3f(20.0f, 0.0f, -5.0f));
+	// vertices.push_back(Vector3f(-20.0f, 0.0f, -5.0f));
 
-	//segunda linha
-	vertices.push_back(Vector3f(20.0f, 0.0f, -10.0f));
-	vertices.push_back(Vector3f(-20.0f, 0.0f, -10.0f));
+	// //segunda linha
+	// vertices.push_back(Vector3f(20.0f, 0.0f, -10.0f));
+	// vertices.push_back(Vector3f(-20.0f, 0.0f, -10.0f));
 		
+	for(int i = -gridSize;i<gridSize;i++){
+		vertices.push_back(Vector3f((float) gridSize, 0.0f, 0.0f -(float) i));
+		vertices.push_back(Vector3f(-(float) gridSize, 0.0f, 0.0f -(float) i));
+	}
+	for(int i = -gridSize ;i<gridSize;i++){
+		vertices.push_back(Vector3f(0.0f -(float) i, 0.0f,(float) gridSize ));
+		vertices.push_back(Vector3f(0.0f -(float) i, 0.0f,-(float) gridSize));
+	}
+
+
 	nVertices = vertices.size();
 
     //Cria o Vertex Array Object (VAO). Ele vai armazenar as informações do buffer e como este buffer será acessado no vertex shader

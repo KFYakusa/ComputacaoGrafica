@@ -11,7 +11,7 @@ Object::Object(){
     rotation = Matrix4f::Identity();
     position = Vector3f(0,0,0);
     fatorEscale = Vector3f::Ones();
-    color = Vector3f(1,0,0);
+    color = Vector3f(1.0f,0.0f,0.0f);
 }
 
 void Object::setColor(Eigen::Vector3f c){
