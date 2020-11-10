@@ -75,8 +75,19 @@ std::vector<unsigned int>*Scene::getSeneShaderPrograms(){
 int Scene::getCurrentObjectID(){
     return currentObjectID;
 }
-std::vector<ObjectPLY>* Scene::getSeneObjects(){
+
+std::vector<ObjectArray>* Scene::getSceneObjects(){
     return &objects;
+}
+
+
+std::vector<ObjectPLY>* Scene::getScenePLYObjects(){
+    return &objectsPLY;
+}
+
+
+ObjectLines* Scene::getFloor(){
+    return &floor;
 }
 
 Camera* Scene::getCamera(){

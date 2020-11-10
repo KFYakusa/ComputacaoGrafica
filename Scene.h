@@ -6,6 +6,8 @@
 #include <vector>
 #include <Eigen/Dense>
 #include "ObjectPLY.h"
+#include "ObjectArray.h"
+#include "ObjectLines.h"
 #include "Camera.h"
 
 #include <GLFW/glfw3.h> //GLFW
@@ -31,9 +33,10 @@ public:
 
     std::vector<unsigned int>* getSeneShaderPrograms(); //retorna a REFERENCIA de objects
     int getCurrentObjectID();
-    std::vector<ObjectPLY>* getSeneObjects(); //retorna a REFERENCIA de objects
+    std::vector<ObjectArray>* getSceneObjects(); //retorna a REFERENCIA de objects
+    std::vector<ObjectPLY>* getScenePLYObjects(); //retorna a REFERENCIA de objects
     Camera* getCamera(); //retorna a REFERENCIA de camera
-
+    ObjectLines* getFloor();
 
     //SET
     void setGlslMajorVersion(int majorVersion);
@@ -64,7 +67,9 @@ private:
     //atributos cenas
     std::vector<unsigned int> programs; //shader program
     int currentObjectID;
-    std::vector<ObjectPLY> objects;
+    std::vector<ObjectArray> objects;
+    std::vector<ObjectPLY> objectsPLY;
+    ObjectLines floor;
     Camera camera;
     
     //singleton

@@ -66,63 +66,63 @@ void ObjectArray::render(){
 
 
 
-std::vector<Eigen::Vector3f> ObjectArray::getCubeVertices(){
-    //vertices
-    //n faces = 12 triangulos 
-    //nvertices = 36  (12 x 3)
-    //Cada vertices possui 3 valors (X, Y, Z) = 36*3 = 108
-    int nv = 108;
-    float array[nv] = {
-        -1.0f,  1.0f, -1.0f, -1.0f, -1.0f, -1.0f, 1.0f, -1.0f, -1.0f,
-        1.0f, -1.0f, -1.0f, 1.0f,  1.0f, -1.0f, -1.0f,  1.0f, -1.0f,
-        1.0f, -1.0f, -1.0f, 1.0f, -1.0f,  1.0f, 1.0f,  1.0f, -1.0f,
-        1.0f, -1.0f,  1.0f, 1.0f,  1.0f,  1.0f, 1.0f,  1.0f, -1.0f,
-        1.0f, -1.0f,  1.0f, -1.0f, -1.0f,  1.0f, 1.0f,  1.0f,  1.0f,
-        -1.0f, -1.0f,  1.0f, -1.0f,  1.0f,  1.0f, 1.0f,  1.0f,  1.0f,
-        -1.0f, -1.0f,  1.0f, -1.0f, -1.0f, -1.0f, -1.0f,  1.0f,  1.0f,
-        -1.0f, -1.0f, -1.0f, -1.0f,  1.0f, -1.0f, -1.0f,  1.0f,  1.0f,
-        -1.0f, -1.0f,  1.0f,  1.0f, -1.0f,  1.0f,  1.0f, -1.0f, -1.0f,
-        1.0f, -1.0f, -1.0f, -1.0f, -1.0f, -1.0f, -1.0f, -1.0f,  1.0f,
-        -1.0f,  1.0f, -1.0f, 1.0f,  1.0f, -1.0f, 1.0f,  1.0f,  1.0f,
-        1.0f,  1.0f,  1.0f, -1.0f,  1.0f,  1.0f, -1.0f,  1.0f, -1.0f
-    };
+// std::vector<Eigen::Vector3f> ObjectArray::getCubeVertices(){
+//     //vertices
+//     //n faces = 12 triangulos 
+//     //nvertices = 36  (12 x 3)
+//     //Cada vertices possui 3 valors (X, Y, Z) = 36*3 = 108
+//     int nv = 108;
+//     float array[nv] = {
+//         -1.0f,  1.0f, -1.0f, -1.0f, -1.0f, -1.0f, 1.0f, -1.0f, -1.0f,
+//         1.0f, -1.0f, -1.0f, 1.0f,  1.0f, -1.0f, -1.0f,  1.0f, -1.0f,
+//         1.0f, -1.0f, -1.0f, 1.0f, -1.0f,  1.0f, 1.0f,  1.0f, -1.0f,
+//         1.0f, -1.0f,  1.0f, 1.0f,  1.0f,  1.0f, 1.0f,  1.0f, -1.0f,
+//         1.0f, -1.0f,  1.0f, -1.0f, -1.0f,  1.0f, 1.0f,  1.0f,  1.0f,
+//         -1.0f, -1.0f,  1.0f, -1.0f,  1.0f,  1.0f, 1.0f,  1.0f,  1.0f,
+//         -1.0f, -1.0f,  1.0f, -1.0f, -1.0f, -1.0f, -1.0f,  1.0f,  1.0f,
+//         -1.0f, -1.0f, -1.0f, -1.0f,  1.0f, -1.0f, -1.0f,  1.0f,  1.0f,
+//         -1.0f, -1.0f,  1.0f,  1.0f, -1.0f,  1.0f,  1.0f, -1.0f, -1.0f,
+//         1.0f, -1.0f, -1.0f, -1.0f, -1.0f, -1.0f, -1.0f, -1.0f,  1.0f,
+//         -1.0f,  1.0f, -1.0f, 1.0f,  1.0f, -1.0f, 1.0f,  1.0f,  1.0f,
+//         1.0f,  1.0f,  1.0f, -1.0f,  1.0f,  1.0f, -1.0f,  1.0f, -1.0f
+//     };
 
-    int nVertices =  nv / 3;
+//     int nVertices =  nv / 3;
 
-	vector<Vector3f> vertices(nVertices);
-	int idx = 0;
-	for(size_t i=0; i<nVertices; i++){		
-		vertices[i]= Vector3f(array[idx], array[idx+1], array[idx+2]);
-		idx +=3;
-	}
+// 	vector<Vector3f> vertices(nVertices);
+// 	int idx = 0;
+// 	for(size_t i=0; i<nVertices; i++){		
+// 		vertices[i]= Vector3f(array[idx], array[idx+1], array[idx+2]);
+// 		idx +=3;
+// 	}
 
-    return vertices;
-}
+//     return vertices;
+// }
 
-std::vector<Eigen::Vector3f>  ObjectArray::getPyramidVertices(){
+// std::vector<Eigen::Vector3f>  ObjectArray::getPyramidVertices(){
     
-    int nv = 54;
-    float array[nv] =
-	{
-		-1.0f, -1.0f, 1.0f, 1.0f, -1.0f, 1.0f, 0.0f, 1.0f, 0.0f,
-		1.0f, -1.0f, 1.0f, 1.0f, -1.0f, -1.0f, 0.0f, 1.0f, 0.0f,
-		1.0f, -1.0f, -1.0f, -1.0f, -1.0f, -1.0f, 0.0f, 1.0f, 0.0f,
-		-1.0f, -1.0f, -1.0f, -1.0f, -1.0f, 1.0f, 0.0f, 1.0f, 0.0f,
-		-1.0f, -1.0f, -1.0f, 1.0f, -1.0f, 1.0f, -1.0f, -1.0f, 1.0f,
-		1.0f, -1.0f, 1.0f, -1.0f, -1.0f, -1.0f, 1.0f, -1.0f, -1.0f
-	};
+//     int nv = 54;
+//     float array[nv] =
+// 	{
+// 		-1.0f, -1.0f, 1.0f, 1.0f, -1.0f, 1.0f, 0.0f, 1.0f, 0.0f,
+// 		1.0f, -1.0f, 1.0f, 1.0f, -1.0f, -1.0f, 0.0f, 1.0f, 0.0f,
+// 		1.0f, -1.0f, -1.0f, -1.0f, -1.0f, -1.0f, 0.0f, 1.0f, 0.0f,
+// 		-1.0f, -1.0f, -1.0f, -1.0f, -1.0f, 1.0f, 0.0f, 1.0f, 0.0f,
+// 		-1.0f, -1.0f, -1.0f, 1.0f, -1.0f, 1.0f, -1.0f, -1.0f, 1.0f,
+// 		1.0f, -1.0f, 1.0f, -1.0f, -1.0f, -1.0f, 1.0f, -1.0f, -1.0f
+// 	};
 
 
-   int nVertices =  nv / 3;
+//    int nVertices =  nv / 3;
 
-	vector<Vector3f> vertices(nVertices);
-	int idx = 0;
-	for(size_t i=0; i<nVertices; i++){		
-		vertices[i]= Vector3f(array[idx], array[idx+1], array[idx+2]);
-		idx +=3;
-	}
+// 	vector<Vector3f> vertices(nVertices);
+// 	int idx = 0;
+// 	for(size_t i=0; i<nVertices; i++){		
+// 		vertices[i]= Vector3f(array[idx], array[idx+1], array[idx+2]);
+// 		idx +=3;
+// 	}
 
-    return vertices;
-}
+//     return vertices;
+// }
 
 

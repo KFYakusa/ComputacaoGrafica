@@ -62,8 +62,81 @@ void guiNewFrame();
 //renderiza as janelas 2D -> GUI
 void guiRender();
 
-// Read the PLY image and return a Object, (object list, pointer to Vert GPU variable, point to GPU Color Variable,  Image name, Position )
-void ReadPLY(std::vector<ObjectPLY> *objects, GLuint *vtsVerticePtr, GLint *vtsColorPtr, string nomeImagem,Vector3f position){
+
+void ReadPLY(std::vector<ObjectArray> *objects, GLuint *vtsVerticePtr, string nomeImagem,Vector3f position,Vector3f colorParameter=Vector3f(1.0f,0.0f,1.0f)){
+	float dadosV[12];
+	float dadosF[4];
+	int nVertex;
+	int nFaces;
+	string parameter;
+
+	vector<Vector3f>auxV;
+	vector<Vector3i>faces;
+	vector<Vector3f>vertices;
+	
+	streambuf *cinbuf = cin.rdbuf();
+	ifstream file(nomeImagem);
+
+	if(file.is_open()){
+		cin.rdbuf(file.rdbuf());
+	}
+
+	while(true){
+		cin>> parameter;
+		if(!cin)
+			break;
+		if(parameter.size() > 0 && parameter == "comment"){
+			string aux;
+			getline(cin,aux);
+		}
+		if(parameter.size() > 0 && parameter == "element"){
+			cin>>parameter;
+			if(parameter == "vertex"){
+				cin>>nVertex;
+			}else if (parameter == "face"){
+				cin>>nFaces;
+			}
+		}
+		if(parameter == "end_header"){
+			int contador=nVertex;
+			while(contador>0){
+				for(int i=0;i<12;i++){
+					cin>>dadosV[i];
+				}
+				auxV.push_back(Vector3f(dadosV[0],dadosV[1],dadosV[2]));
+				contador--;
+			}
+			while(nFaces>0){	
+				for(int i =0;i<4;i++){
+					cin>>dadosF[i];
+					if(i>0){
+						vertices.push_back(auxV[dadosF[i]]);
+						
+					}
+				}
+				nFaces--;
+			}
+		}
+	}
+
+	file.close();
+	std::cin.rdbuf(cinbuf);
+
+	// create the object
+	
+	ObjectArray obj1;
+	obj1.create(vertices, *vtsVerticePtr);
+	obj1.setPosition(position);
+	obj1.setColor(colorParameter);
+	objects->push_back(obj1); //add 
+	return;
+};
+
+
+
+
+// Read the PLY image and return a Object, (object list, pointer to Vert GPU variable, point to GPU Color Variable,  Image name, Position, corEstatica? )
+void ReadPLYWcolor(std::vector<ObjectPLY> *objects, GLuint *vtsVerticePtr, GLint *vtsColorPtr, string nomeImagem,Vector3f position=Vector3f::Zero()){
 	float dadosV[12];
 	float dadosF[4];
 	int nVertex;
@@ -83,13 +156,13 @@ void ReadPLY(std::vector<ObjectPLY> *objects, GLuint *vtsVerticePtr, GLint *vtsC
 
 	while(true){
 		cin>> parameter;
-		cout<< parameter;
+		
 		if(!cin)
 			break;
 		if(parameter.size() > 0 && parameter == "comment"){
 			string aux;
 			getline(cin,aux);
-			cout<<endl<<aux<<endl;
+			
 		}
 		if(parameter.size() > 0 && parameter == "element"){
 			cin>>parameter;
@@ -125,11 +198,14 @@ void ReadPLY(std::vector<ObjectPLY> *objects, GLuint *vtsVerticePtr, GLint *vtsC
 	file.close();
 	std::cin.rdbuf(cinbuf);
 
-		// create the object
+	// create the object
+	
 	ObjectPLY obj1;
 	obj1.create(vertices, *vtsVerticePtr,*vtsColorPtr,cor);
 	obj1.setPosition(position);
 	objects->push_back(obj1); //add 
+	return;
+
 };
 
 
@@ -168,9 +244,15 @@ int main(void) {
 		deleteWindow();
 		EXCEPTION( "Erro ao criar programa!");
 	}
+	unsigned int programWcor;
+	if (!Shader::createProgram(&programWcor, "vertShaderWcolor.glsl", "fragShaderWcolor.glsl")) { //ocorreu erro na criação do programa ??
+		deleteWindow();
+		EXCEPTION( "Erro ao criar programa!");
+	}
 
 	//atribui o programa a cena. Assim, temos acesso global a este ponteiro!
 	scene->getSeneShaderPrograms()->push_back(program);
+	scene->getSeneShaderPrograms()->push_back(programWcor);
 
 	//CÂMERA
 	//Matriz de projeção perspectiva e posicionamento
@@ -185,31 +267,15 @@ int main(void) {
 	scene->getCamera()->create(projectionMat, posCamera);
 
 	//pega o vetor de objetos da cena (vamos colocar os objetos aqui para poder ter acesso global)
-	std::vector<ObjectPLY> *objects = scene->getSeneObjects();
+	
+	std::vector<ObjectArray> *objects = scene->getSceneObjects();
+	std::vector<ObjectPLY> *objectsWcolor = scene->getScenePLYObjects();
 	
 	//cria os vértices dos objetos cubo, torus e plano
-	ReadPLY(objects,&vtsVerticePtr, &vtsColorPtr,"cubo.ply" ,Vector3f(-2.3f, 0.0f, 0.0));
-	ReadPLY(objects,&vtsVerticePtr, &vtsColorPtr,"torus.ply",Vector3f(2.3f, 0.0f, 0.0) );
-	ReadPLY(objects,&vtsVerticePtr, &vtsColorPtr,"plano.ply",Vector3f(0.0f, 2.0f, 0.0) );
+	ReadPLYWcolor(objectsWcolor,&vtsVerticePtr, &vtsColorPtr,"sun.ply",Vector3f(0.0f, 2.0f, 0.0) );
+	ReadPLYWcolor(objectsWcolor,&vtsVerticePtr, &vtsColorPtr,"mercury.ply",Vector3f(2.0f, 0.0f, 0.0));
+	ReadPLY(objects,&vtsVerticePtr, "cubo.ply", Vector3f(-3.0f, 0.0f, 0.0), Vector3f(0.0f,1.0f,1.0f));
 	
-	// vector<Vector3f> pyramidVertices = ObjectPLY::getPyramidVertices();
-	// ObjectPLY obj1;
-	// obj1.create(pyramidVertices, vtsVerticePtr);
-	// obj1.setPosition(Vector3f(-2.3f, 0.0f, 0.0));
-	// obj1.setColor(Vector3f(1.0f, 1.0f, 0.0));
-	// objects->push_back(obj1); //add 
-	
-	// ObjectPLY obj2;
-	// obj2.create(cubeVertices, vtsVerticePtr);
-	// obj2.setPosition(Vector3f(0.0f, 0.0f, -3.0));
-	// obj2.setColor(Vector3f(0.0f, 0.0f, 1.0));
-	// objects->push_back(obj2); //add 
-
-	// ObjectPLY obj3;
-	// obj3.create(cubeVertices, vtsVerticePtr);
-	// obj3.setPosition(Vector3f(2.3f, 0.0f, 0.0));
-	// obj3.setColor(Vector3f(1.0f, 0.0f, 0.0));
-	// objects->push_back(obj3); //add 
 	
 	//LOOP de renderização. A cada passada, um quadro é renderizo!
 	while (isOpenWindow()) {
@@ -260,14 +326,14 @@ void renderkeyEvent(){
 
 	GLFWwindow *win = Scene::getInstance()->getGlfwWindow();
 	int ID = Scene::getInstance()->getCurrentObjectID();
-	std::vector<ObjectPLY> *objects = Scene::getInstance()->getSeneObjects();
+	std::vector<ObjectPLY> *objects = Scene::getInstance()->getScenePLYObjects();
 
 	if (glfwGetKey(win, GLFW_KEY_UP) == GLFW_PRESS){
-		Matrix4f R = objects->at(ID).getRotation() * Math::xRotationMat(0.001f);
+		Matrix4f R = objects->at(ID).getRotation() * Math::xRotationMat(0.01f);
 		objects->at(ID).setRotation(R);
 	}
 	if (glfwGetKey(win, GLFW_KEY_DOWN) == GLFW_PRESS){
-		Matrix4f R = objects->at(ID).getRotation() * Math::zRotationMat(-0.001f);
+		Matrix4f R = objects->at(ID).getRotation() * Math::xRotationMat(-0.01f);
 		objects->at(ID).setRotation(R);
 	}
 
@@ -325,7 +391,7 @@ void render(){
 	Matrix4f tranMat = Math::translationMat(- cam->getPosition()); //translação inversa!
 	Matrix4f perspectiveProjMat = cam->getProjectionMatrix(); //matriz de projeção
 	Matrix4f PV  = perspectiveProjMat * tranMat; //matriz view -> projeção + posicionamento da câmera
-	Matrix4f matPVM, ObjTrans, R;
+	Matrix4f matPVM, ObjTrans, R, MercurioTransform;
 	GLuint matPVMRef, corRef, program;
 
 	if(wireframe)
@@ -333,10 +399,50 @@ void render(){
 	else
 		glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );
 	
-	//DRAW -> agora vamos desenhar toda a cena
-	{
-		std::vector<ObjectPLY> *objects = Scene::getInstance()->getSeneObjects();
+
+	// cena sem cores
+{
+		std::vector<ObjectArray> *objects = Scene::getInstance()->getSceneObjects();
 		program = Scene::getInstance()->getSeneShaderPrograms()->at(0);
+		//especifica os shaders que serão usados na renderização
+		glUseProgram(program);
+		
+		//le o endereço de memória das variáveis do vertexshader: cor e PVM
+		matPVMRef = glGetUniformLocation(program, "PVM");
+		// corRef = glGetUniformLocation(program, "cor");
+
+		//chao
+		ObjectLines *floor = Scene::getInstance()->getFloor();
+		
+		matPVM = PV  * floor->getTranslation() * floor->getRotation();
+		glUniformMatrix4fv(matPVMRef, 1, GL_FALSE, matPVM.data());
+		glUniform3fv(corRef, 1, floor->getColor().data());
+		floor->render();
+
+		//animação do objeto atual
+		int currentObjectID = Scene::getInstance()->getCurrentObjectID();
+		R = objects->at(currentObjectID).getRotation() * Math::zRotationMat(0.01f);
+		objects->at(currentObjectID).setRotation(R);
+
+		//renderização de todos os objetos
+		for(size_t i = 0; i<objects->size(); i++){
+			
+			matPVM = PV * objects->at(i).getTranslation() * objects->at(i).getRotation() * objects->at(i).getEscale();	
+
+			glUniformMatrix4fv(matPVMRef, 1, GL_FALSE, matPVM.data());
+			glUniform3fv(corRef, 1, objects->at(i).getColor().data());
+			objects->at(i).render();
+		}
+
+	}
+
+
+
+
+	//DRAW -> agora vamos desenhar toda a cena.... COM CORES
+	{
+		std::vector<ObjectPLY> *objectsWcolor = Scene::getInstance()->getScenePLYObjects();
+		program = Scene::getInstance()->getSeneShaderPrograms()->at(1);
 		//especifica os shaders que serão usados na renderização
 		glUseProgram(program);
 		
@@ -347,18 +453,21 @@ void render(){
 
 		//animação do objeto atual
 		int currentObjectID = Scene::getInstance()->getCurrentObjectID();
-		R = objects->at(currentObjectID).getRotation() * Math::xRotationMat(0.01f);
-		objects->at(currentObjectID).setRotation(R);
+		R = objectsWcolor->at(currentObjectID).getRotation() * Math::zRotationMat(0.01f);
+		objectsWcolor->at(currentObjectID).setRotation(R);
+
+		MercurioTransform = objectsWcolor->at(1).getEscale() * Math::scaleMat(Vector3f(0.5f,0.5f,0.5f)) * Math::translationMat(Vector3f(2.5f,2.5f,0.0f)); 
+		objectsWcolor->at(1).setRotation(MercurioTransform);
 
 
 		//renderização de todos os objetos
-		for(size_t i = 0; i<objects->size(); i++){
+		for(size_t i = 0; i<objectsWcolor->size(); i++){
 			
-			matPVM = PV * objects->at(i).getTranslation() * objects->at(i).getRotation();	
+			matPVM = PV * objectsWcolor->at(i).getTranslation() * objectsWcolor->at(i).getRotation() * objectsWcolor->at(i).getEscale();	
 
 			glUniformMatrix4fv(matPVMRef, 1, GL_FALSE, matPVM.data());
-			glUniform3fv(corRef, 1, objects->at(i).getColor().data());
-			objects->at(i).render();
+			glUniform3fv(corRef, 1, objectsWcolor->at(i).getColor().data());
+			objectsWcolor->at(i).render();
 		}
 
 	}
