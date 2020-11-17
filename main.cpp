@@ -263,9 +263,10 @@ int main(void) {
 	float aspectRatio = float(scene->getWinWidth()) / float(scene->getWinHeight());
 	Matrix4f projectionMat = Math::perspectiveProjMat(FOV, aspectRatio, zNear, zFar);
 	Vector3f posCamera = Vector3f(0.0f, 4.0f, 12.0f);
+	Vector3f posTargetCamera = Vector3f(0.0f,0.0f,0.0f);
 
 	//atribui a matriz de projeção e posição da camera a cena
-	scene->getCamera()->create(projectionMat, posCamera);
+	scene->getCamera()->create(projectionMat, posCamera,posTargetCamera);
 
 	//pega o vetor de objetos da cena (vamos colocar os objetos aqui para poder ter acesso global)
 	
@@ -408,9 +409,10 @@ void render(){
 	static float rotacao;
 	Camera* cam = Scene::getInstance()->getCamera();
 
-	Matrix4f tranMat = Math::translationMat(- cam->getPosition()); //translação inversa!
-	Matrix4f perspectiveProjMat = cam->getProjectionMatrix(); //matriz de projeção
-	Matrix4f PV  = perspectiveProjMat * tranMat; //matriz view -> projeção + posicionamento da câmera
+	// Matrix4f tranMat = Math::translationMat(- cam->getPosition()); //translação inversa!
+	// Matrix4f perspectiveProjMat = cam->getProjectionMatrix(); //matriz de projeção
+
+	Matrix4f PV  = cam->getProjectionMatrix() * cam->getViewMatrix(); //matriz view -> projeção + posicionamento da câmera
 	Matrix4f matPVM, ObjTrans, R, MercurioTransform;
 	GLuint matPVMRef, corRef, program;
 
