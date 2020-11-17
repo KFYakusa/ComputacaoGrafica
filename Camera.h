@@ -15,9 +15,17 @@ public:
     Eigen::Matrix4f getViewMatrix();
     Eigen::Vector3f getPosition();
     
+    void moveForward();
+    void moveRight();
+    void moveBackward();
+    void moveLeft();
+    void moveUp();
+    void moveDown();
+    
 private:
     Eigen::Matrix4f projectionMatrix;
     Eigen::Vector3f position;
+    Eigen::Vector3f currentMove;
 
     Eigen::Vector3f dirZ, dirY, dirX; // construir matrirz de rotacao
 };

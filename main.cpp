@@ -335,8 +335,12 @@ void keyEvent(GLFWwindow* win, int key, int scancode, int action, int mods){
 void renderkeyEvent(){
 
 	GLFWwindow *win = Scene::getInstance()->getGlfwWindow();
-	int ID = Scene::getInstance()->getCurrentObjectID();
-	std::vector<ObjectPLY> *objects = Scene::getInstance()->getScenePLYObjects();
+	Camera *cam = Scene::getInstance()->getCamera();
+	// int ID = Scene::getInstance()->getCurrentObjectID();
+
+
+
+	// std::vector<ObjectPLY> *objects = Scene::getInstance()->getScenePLYObjects();
 
 	// if (glfwGetKey(win, GLFW_KEY_UP) == GLFW_PRESS){
 	// 	Matrix4f R = objects->at(ID).getRotation() * Math::xRotationMat(0.01f) * Math::translationMat(Vector3f(0.0f,0.0f,1.0f))  * Math::yRotationMat(0.1f);
@@ -347,15 +351,30 @@ void renderkeyEvent(){
 	// 	objects->at(ID).setRotation(R);
 	// }
 	
-	if (glfwGetKey(win, GLFW_KEY_UP) == GLFW_PRESS){
-		Matrix4f R = objects->at(ID).getTranslation();
+	if (glfwGetKey(win, GLFW_KEY_W) == GLFW_PRESS){
+		cam->moveForward();
+		// Matrix4f R = objects->at(ID).getTranslation();
+		// // Matrix4f R = objects->at(ID).getRotation() * Math::yRotationMat(-0.01f);
+		// objects->at(ID).setRotation(R);
+	}
+	if (glfwGetKey(win, GLFW_KEY_S) == GLFW_PRESS){
 		// Matrix4f R = objects->at(ID).getRotation() * Math::yRotationMat(-0.01f);
-		objects->at(ID).setRotation(R);
+		// objects->at(ID).setRotation(R);
+		cam->moveBackward();
 	}
-	if (glfwGetKey(win, GLFW_KEY_DOWN) == GLFW_PRESS){
-		Matrix4f R = objects->at(ID).getRotation() * Math::yRotationMat(-0.01f);
-		objects->at(ID).setRotation(R);
+	if(glfwGetKey(win,GLFW_KEY_D)==GLFW_PRESS){
+		cam->moveRight();
 	}
+	if(glfwGetKey(win,GLFW_KEY_A)==GLFW_PRESS){
+		cam->moveLeft();
+	}
+	if(glfwGetKey(win,GLFW_KEY_SPACE)==GLFW_PRESS){
+		cam->moveUp();
+	}
+	if(glfwGetKey(win,GLFW_KEY_LEFT_CONTROL)==GLFW_PRESS){
+		cam->moveDown();
+	}
+	
 }
 
 void guiNewFrame(){
