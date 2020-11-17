@@ -37,7 +37,7 @@ public:
     std::vector<ObjectPLY>* getScenePLYObjects(); //retorna a REFERENCIA de objects
     Camera* getCamera(); //retorna a REFERENCIA de camera
     ObjectLines* getFloor();
-
+    float getScale();
     //SET
     void setGlslMajorVersion(int majorVersion);
     void setGlslMinorVersion(int minorVersion);
@@ -48,7 +48,7 @@ public:
     void setVSYNC(bool vsync);
     void setGlfwWindow(GLFWwindow* win);
     void setCurrentObjectID(int id);
-    
+    void setScale(float s);
 
 private:
     static void printInstancePointer();

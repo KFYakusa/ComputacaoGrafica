@@ -44,8 +44,8 @@ void ObjectLines::create(unsigned int vtsVerticePtr,int gridSize){
 		vertices.push_back(Vector3f(-(float) gridSize, 0.0f, 0.0f -(float) i));
 	}
 	for(int i = -gridSize ;i<gridSize;i++){
-		vertices.push_back(Vector3f(0.0f -(float) i, 0.0f,(float) gridSize ));
-		vertices.push_back(Vector3f(0.0f -(float) i, 0.0f,-(float) gridSize));
+		vertices.push_back(Vector3f(0.0f -(float) i, -2.0f,(float) gridSize ));
+		vertices.push_back(Vector3f(0.0f -(float) i, -2.0f,-(float) gridSize));
 	}
 
 
