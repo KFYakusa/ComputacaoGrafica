@@ -16,6 +16,8 @@ Scene::Scene(){
     VSYNC = false;
     glWin = nullptr;
     currentObjectID = 0;
+    rtf = 0.0;
+    lastTime = 0.0;
 }
 
 
@@ -93,6 +95,12 @@ Camera* Scene::getCamera(){
     return &camera;
 }
 
+double Scene::getRTF(){
+    return rtf;
+}
+double Scene::getLastTime(){
+    return lastTime;
+}
 
 //SET
 void Scene::setGlslMajorVersion(int majorVersion){
@@ -121,4 +129,10 @@ void Scene::setGlfwWindow(GLFWwindow* win){
 }
 void Scene::setCurrentObjectID(int id){
     currentObjectID = id;
+}
+void Scene::setRTF(double RTF){
+    rtf = RTF;
+}
+void Scene::setLastTime(double LastTime){
+    lastTime = LastTime;
 }

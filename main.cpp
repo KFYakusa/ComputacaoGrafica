@@ -268,6 +268,7 @@ int main(void) {
 	//atribui a matriz de projeção e posição da camera a cena
 	scene->getCamera()->create(projectionMat, posCamera,posTargetCamera);
 
+	Scene::getInstance()->setLastTime(glfwGetTime());
 	//pega o vetor de objetos da cena (vamos colocar os objetos aqui para poder ter acesso global)
 	
 	std::vector<ObjectArray> *objects = scene->getSceneObjects();
@@ -275,9 +276,11 @@ int main(void) {
 	
 	//cria os vértices dos objetos cubo, torus e plano
 	ReadPLYWcolor(objectsWcolor,&vtsVerticePtr, &vtsColorPtr,"sun.ply",		Vector3f(0.0f, 0.0f, 0.0f));
-	ReadPLYWcolor(objectsWcolor,&vtsVerticePtr, &vtsColorPtr,"mercury.ply",	Vector3f(2.0f, 0.0f, 0.0f));
-	ReadPLY(objects,&vtsVerticePtr, "cubo.ply", Vector3f(-3.0f, 0.0f, 0.0), Vector3f(0.3f, 0.3f, 0.3f));
-	ReadPLYWcolor(objectsWcolor,&vtsVerticePtr, &vtsColorPtr,"Earth.ply",	Vector3f(3.0f, 0.0f, 0.0f));
+	ReadPLYWcolor(objectsWcolor,&vtsVerticePtr, &vtsColorPtr,"mercury.ply",	Vector3f(7.0f, 0.0f, 0.0f));
+	ReadPLY(objects,&vtsVerticePtr, "cubo.ply", Vector3f(-3.0f, 4.0f, 0.0), Vector3f(0.3f, 0.3f, 0.3f));
+	ReadPLYWcolor(objectsWcolor,&vtsVerticePtr, &vtsColorPtr,"Venus.ply",	Vector3f(6.0f, 0.0f, 0.0f));
+	ReadPLYWcolor(objectsWcolor,&vtsVerticePtr, &vtsColorPtr,"Earth.ply",	Vector3f(8.0f, 0.0f, 0.0f));
+	ReadPLYWcolor(objectsWcolor,&vtsVerticePtr, &vtsColorPtr, "Neptune.ply",Vector3f(10.0f,0.0f, 0.0f));
 
 	scene->getFloor()->create(vtsVerticePtr,40);
 	scene->getFloor()->setPosition(Vector3f(0.0f, -1.0f, -10.0f));
@@ -409,6 +412,14 @@ void beforeRender(){
 
 	//Limpa os buffers que armazenam os valores de cor
 	glClear(GL_COLOR_BUFFER_BIT);
+
+
+	double lastTime = Scene::getInstance()->getLastTime();
+	double RTF = glfwGetTime() - lastTime;
+	lastTime= glfwGetTime();
+	Scene::getInstance()->setRTF(RTF);
+	cout<<"inside beforeRender: "<< Scene::getInstance()->getRTF()<<endl;
+	Scene::getInstance()->setLastTime(lastTime);
 }
 
 void afterRender(){
@@ -424,8 +435,13 @@ void afterRender(){
 void render(){
 	Scene *scene = Scene::getInstance();
 	static bool wireframe = false;
-	static int planeta = 0;
-	static float rotacao;
+	static bool mirrored= false;
+	static bool escalaAllEixos = false;
+	static int planeta = 1;
+	static float rotacao= 1.0f;
+	static float escale= 1.0f;
+	static float movement=0.0f;
+	static char eixo = 'y';
 	Camera* cam = Scene::getInstance()->getCamera();
 
 	// Matrix4f tranMat = Math::translationMat(- cam->getPosition()); //translação inversa!
@@ -465,10 +481,13 @@ void render(){
 		// R = objects->at(currentObjectID).getRotation() * Math::yRotationMat(0.01f);
 		// objects->at(currentObjectID).setRotation(R);
 
+		R = objects->at(0).getRotation()* Math::yRotationMat(0.01f);
+		objects->at(0).setRotation(R);
+
 		//renderização de todos os objetos
 		for(size_t i = 0; i<objects->size(); i++){
 			
-			matPVM = PV * objects->at(i).getTranslation() * objects->at(i).getRotation() * Math::yRotationMat(0.01f)* objects->at(i).getEscale();	
+			matPVM = PV * objects->at(i).getTranslation() * objects->at(i).getRotation() * Math::yRotationMat(Scene::getInstance()->getRTF() * 0.1f)* objects->at(i).getEscale();	
 
 			glUniformMatrix4fv(matPVMRef, 1, GL_FALSE, matPVM.data());
 			glUniform3fv(corRef, 1, objects->at(i).getColor().data());
@@ -495,23 +514,33 @@ void render(){
 		// R = objectsWcolor->at(currentObjectID).getRotation() * Math::yRotationMat(0.01f) * objectsWcolor->at(currentObjectID).getEscale();
 		// objectsWcolor->at(currentObjectID).setRotation(R);
 
-		R = objectsWcolor->at(0).getRotation() * Math::yRotationMat(0.01f);
+		R = objectsWcolor->at(0).getRotation() * Math::yRotationMat(Scene::getInstance()->getRTF() *  0.1f);
 		objectsWcolor->at(0).setRotation(R);
 
-		R = objectsWcolor->at(1).getRotation() * Math::yRotationMat(0.01f);
+		R = objectsWcolor->at(1).getRotation() * Math::yRotationMat(Scene::getInstance()->getRTF() *  0.1f);
 		objectsWcolor->at(1).setRotation(R);
 
-		
+		R = objectsWcolor->at(2).getRotation() * Math::yRotationMat(Scene::getInstance()->getRTF() *  0.1f);
+		objectsWcolor->at(2).setRotation(R);
+
+		R = objectsWcolor->at(3).getRotation() * Math::yRotationMat(Scene::getInstance()->getRTF() *  0.1f);
+		objectsWcolor->at(3).setRotation(R);
+
 		// int currentObjectID = Scene::getInstance()->getCurrentObjectID();
 		// R = objectsWcolor->at(currentObjectID).getTranslation()  * objectsWcolor->at(currentObjectID).getEscale() * Math::yRotationMat(0.1f)  * objectsWcolor->at(0).getTranslation() * objectsWcolor->at(0).getEscale();
 		// objectsWcolor->at(currentObjectID).setRotation(R);
 
-		// matPVM = PV * objectsWcolor->at(1).getTranslation() * objectsWcolor->at(1).getRotation() * Math::translationMat(-objectsWcolor->at(1).getPosition() ) * objectsWcolor->at(0).getTranslation();	
-		// // cout<<"currentObjectId"<<i<<endl;
-		// glUniformMatrix4fv(matPVMRef, 1, GL_FALSE, matPVM.data());
-		// glUniform3fv(corRef, 1, objectsWcolor->at(i).getColor().data());
-		// objectsWcolor->at(1).render();
 
+		// matPVM = PV * objectsWcolor->at(0).getTranslation() * objectsWcolor->at(0).getEscale() * objectsWcolor->at(0).getRotation();	
+		// glUniformMatrix4fv(matPVMRef, 1, GL_FALSE, matPVM.data());
+		
+		// objectsWcolor->at(0).render();
+
+		// //Mercurio
+		// matPVM = PV * objectsWcolor->at(0).getTranslation() * objectsWcolor->at(1).getRotation() * objectsWcolor->at(1).getEscale() * objectsWcolor->at(1).getTranslation();	// Math::translationMat(Vector3f(-1,0,-1))
+		// glUniformMatrix4fv(matPVMRef, 1, GL_FALSE, matPVM.data());
+		// objectsWcolor->at(1).render();
+		
 		// MercurioTransform = objectsWcolor->at(1).getEscale() * Math::scaleMat(Vector3f(0.5f,0.5f,0.5f)) * Math::translationMat(Vector3f(2.5f,2.5f,0.0f)); 
 		// objectsWcolor->at(1).setRotation(MercurioTransform);
 		// objectsWcolor->at(1).render();
@@ -520,10 +549,15 @@ void render(){
 		//renderização de todos os objetos
 		for(size_t i = 0; i<objectsWcolor->size(); i++){
 			// matPVM = PV * Math::translationMat(objectsWcolor->at(i).getPosition())  * objectsWcolor->at(currentObjectID).getEscale() *objectsWcolor->at(currentObjectID).getRotation()  * Math::translationMat(objectsWcolor->at(0).getPosition()) * objectsWcolor->at(0).getEscale()
-			matPVM = PV * objectsWcolor->at(i).getTranslation() * objectsWcolor->at(i).getRotation() * objectsWcolor->at(i).getEscale();	
+			if(i==1 || i==2 || i==3)
+				matPVM = PV * objectsWcolor->at(0).getTranslation() * objectsWcolor->at(i).getRotation()  * objectsWcolor->at(i).getTranslation() * objectsWcolor->at(i).getEscale();	// Math::translationMat(Vector3f(-1,0,-1))
+			// else if(i==4)
+			// 	matPVM = PV *  objectsWcolor->at(0).getTranslation() * objectsWcolor->at(2).getRotation() *  objectsWcolor->at(i).getRotation()  * objectsWcolor->at(i).getTranslation() * objectsWcolor->at(i).getEscale();	//
+			else
+				matPVM = PV * objectsWcolor->at(i).getTranslation() * objectsWcolor->at(i).getRotation() * objectsWcolor->at(i).getEscale();	
+			
 			// cout<<"currentObjectId"<<i<<endl;
 			glUniformMatrix4fv(matPVMRef, 1, GL_FALSE, matPVM.data());
-			// glUniform3fv(corRef, 1, objectsWcolor->at(i).getColor().data());
 			objectsWcolor->at(i).render();
 		}
 
@@ -547,22 +581,111 @@ void render(){
 		ImGui::Begin("Título da janela", nullptr, somenteTexto); //cria uma janela
 		ImGui::SetWindowPos(ImVec2(0,0)); //posição
 		ImGui::Text("FPS: %.1f",  ImGui::GetIO().Framerate);
-		ImGui::SameLine();
+		cout<<"inside GUI: "<<Scene::getInstance()->getRTF()<<endl;
+		ImGui::Text("RTS: %.1f", Scene::getInstance()->getRTF()*100 );
 		
-		if (ImGui::Button("wireframe"))   
-			wireframe = !wireframe;
+		
+		ImGui::Checkbox("Wireframe",&wireframe);
 
 		if(ImGui::Button("Mercury"))
 			planeta=1;
-		if(ImGui::Button("Earth")){
+		ImGui::SameLine();
+		if(ImGui::Button("Venus")){
 			planeta=2;
 		}
+		ImGui::SameLine();
+		if(ImGui::Button("Earth")){
+			planeta=3;
+		}
+		ImGui::SameLine();
+		if(ImGui::Button("Borg Ship")){
+			planeta=-1;
+		}
+		ImGui::SliderFloat("Rotacao", &rotacao, 1.0f, 10.0f); 
 		
-		ImGui::SliderFloat("", &rotacao, 0.0f, 40.0f); 
-		ImGui::End(); //finaliza a criação da janela
+		
+		ImGui::SliderFloat("Scale",&escale,0.2f,2.0f);
 
+		ImGui::SliderFloat("Translation",&movement,0.0f,2.0f);
+
+		if(ImGui::Button("eixo X")){
+			eixo = 'x';
+		}
+		ImGui::SameLine();
+		if(ImGui::Button("eixo Y")){
+			eixo = 'y';
+		}
+		ImGui::SameLine();
+		if(ImGui::Button("eixo Z")){
+			eixo = 'z';
+		}
+		ImGui::SameLine();
+
+		if(ImGui::Button("Escale XYZ")){
+			escalaAllEixos = !escalaAllEixos;
+		}
+
+		ImGui::Checkbox("Mirrored",&mirrored);
+		ImGui::End(); //finaliza a criação da janela
+		Matrix4f velocidade;
+		if(planeta>0){
 		
-		Scene::getInstance()->getScenePLYObjects()->at(planeta).setRotation(Math::yRotationMat(rotacao));
+			if(escalaAllEixos){
+				if(eixo=='x'){
+					velocidade = Scene::getInstance()->getScenePLYObjects()->at(planeta).getRotation() * Math::xRotationMat(Scene::getInstance()->getRTF()* rotacao);
+				}else if(eixo=='y'){
+					velocidade = Scene::getInstance()->getScenePLYObjects()->at(planeta).getRotation() * Math::yRotationMat(Scene::getInstance()->getRTF()* rotacao);
+				}else if(eixo=='z'){
+					velocidade = Scene::getInstance()->getScenePLYObjects()->at(planeta).getRotation() * Math::zRotationMat(Scene::getInstance()->getRTF()* rotacao);
+				}
+				if(mirrored)
+					Scene::getInstance()->getScenePLYObjects()->at(planeta).setEscale(Vector3f(-escale,-escale,-escale));
+				else
+					Scene::getInstance()->getScenePLYObjects()->at(planeta).setEscale(Vector3f(escale,escale,escale));
+			}else{
+				if(eixo=='x'){
+					velocidade = Scene::getInstance()->getScenePLYObjects()->at(planeta).getRotation() * Math::xRotationMat(Scene::getInstance()->getRTF()* rotacao);				
+					if(mirrored)
+						Scene::getInstance()->getScenePLYObjects()->at(planeta).setEscale(Vector3f(-escale,-1.0f,-1.0f));
+					else
+						Scene::getInstance()->getScenePLYObjects()->at(planeta).setEscale(Vector3f(escale,1.0f,1.0f));
+
+				}else if(eixo=='y'){
+					velocidade = Scene::getInstance()->getScenePLYObjects()->at(planeta).getRotation() * Math::yRotationMat(Scene::getInstance()->getRTF()* rotacao);
+				
+					if(mirrored)
+						Scene::getInstance()->getScenePLYObjects()->at(planeta).setEscale(Vector3f(-1.0f,-escale,-1.0f));
+					else
+						Scene::getInstance()->getScenePLYObjects()->at(planeta).setEscale(Vector3f(1.0f,escale,1.0f));
+				}else if(eixo=='z'){
+					velocidade = Scene::getInstance()->getScenePLYObjects()->at(planeta).getRotation() * Math::zRotationMat(Scene::getInstance()->getRTF()* rotacao);
+				
+					if(mirrored)
+						Scene::getInstance()->getScenePLYObjects()->at(planeta).setEscale(Vector3f(-1.0f,-1.0f,-escale));
+					else
+						Scene::getInstance()->getScenePLYObjects()->at(planeta).setEscale(Vector3f(1.0f,1.0f,escale));
+				}
+			}
+			Scene::getInstance()->getScenePLYObjects()->at(planeta).setRotation(velocidade);
+			Scene::getInstance()->getScenePLYObjects()->at(planeta).setPosition(Vector3f(movement,movement,movement));
+
+		}else{
+			if(eixo=='x'){
+				velocidade = Scene::getInstance()->getSceneObjects()->at(0).getRotation() * Math::xRotationMat(Scene::getInstance()->getRTF()* rotacao);
+			}else if(eixo='y'){
+				velocidade = Scene::getInstance()->getSceneObjects()->at(0).getRotation() * Math::yRotationMat(Scene::getInstance()->getRTF()* rotacao);
+			}else if(eixo=='z'){
+				velocidade = Scene::getInstance()->getSceneObjects()->at(0).getRotation() * Math::zRotationMat(Scene::getInstance()->getRTF()* rotacao);
+			}
+			
+			Scene::getInstance()->getSceneObjects()->at(0).setRotation(velocidade);
+			if(mirrored)
+				Scene::getInstance()->getSceneObjects()->at(0).setEscale(Vector3f(-escale,-escale,-escale));
+			else
+				Scene::getInstance()->getSceneObjects()->at(0).setEscale(Vector3f(escale,escale,escale));
+			Scene::getInstance()->getScenePLYObjects()->at(0).setPosition(Vector3f(movement,movement,movement));
+		}
+		
 		guiRender(); //renderiza todas as janelas criadas
 	}
 
@@ -572,7 +695,6 @@ void initOpenGL(){
 	
 	//pega a instância global da classe cena
 	Scene *scene = Scene::getInstance();
-
 
 	if (!glfwInit())
 		EXCEPTION("Falha ao executar glfwInit()");
@@ -592,11 +714,6 @@ void initOpenGL(){
 		glfwWindowHint(GLFW_GREEN_BITS, mode->greenBits);
 		glfwWindowHint(GLFW_BLUE_BITS, mode->blueBits);
 		glfwWindowHint(GLFW_REFRESH_RATE, mode->refreshRate);
-
-		//cout << mode->redBits << endl;
-		//cout << mode->greenBits << endl;
-		//cout << mode->blueBits << endl;
-		//cout << mode->refreshRate << endl << endl;
 
 		window = glfwCreateWindow(mode->width, mode->height, scene->getWinTitle().c_str(), glfwGetPrimaryMonitor(), NULL); //tela cheia
 	}

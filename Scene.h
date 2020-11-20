@@ -38,6 +38,8 @@ public:
     Camera* getCamera(); //retorna a REFERENCIA de camera
     ObjectLines* getFloor();
     float getScale();
+    double getRTF();
+    double getLastTime();
     //SET
     void setGlslMajorVersion(int majorVersion);
     void setGlslMinorVersion(int minorVersion);
@@ -50,6 +52,9 @@ public:
     void setCurrentObjectID(int id);
     void setScale(float s);
 
+    void setRTF(double RTF);
+    void setLastTime(double LastTime);
+
 private:
     static void printInstancePointer();
 
@@ -58,6 +63,8 @@ private:
     int glslMinorVersion;
     int winWidth;
     int winHeight;
+    double rtf;
+    double lastTime;
     std::string winTitle;
     bool fullscreen;
     bool VSYNC;
