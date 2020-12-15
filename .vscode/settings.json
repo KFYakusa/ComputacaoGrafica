@@ -48,6 +48,8 @@
         "typeinfo": "cpp",
         "map": "cpp",
         "numeric": "cpp",
-        "cinttypes": "cpp"
+        "cinttypes": "cpp",
+        "bitset": "cpp",
+        "regex": "cpp"
     }
 }

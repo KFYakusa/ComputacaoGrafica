@@ -92,14 +92,14 @@ int main(void) {
 
 	
 	//cria e compila os shaders!
-	std::vector<string> vertex(5);
-	std::vector<string> fragment(5);
+	std::vector<string> vertex(6);
+	std::vector<string> fragment(6);
 	vertex[COORD] = "coord-vertex.glsl"; fragment[COORD] = "coord-frag.glsl";
 	vertex[COORD_COLOR] = "coordColor-vertex.glsl"; fragment[COORD_COLOR] = "coordColor-frag.glsl";
 	vertex[COORD_TEXT] = "coordTex-vertex.glsl"; fragment[COORD_TEXT] = "coordTex-frag.glsl";
 	vertex[COORD_TEXT_COLOR] = "coordTexColor-vertex.glsl"; fragment[COORD_TEXT_COLOR] = "coordTexColor-frag.glsl";
 	vertex[COORD_MULTI_TEXT] = "coordMultiTex-vertex.glsl"; fragment[COORD_MULTI_TEXT] = "coordMultiTex-frag.glsl";
-
+	vertex[COORD_TEXT_BLEND] = "coordTextBlend-vertex.glsl"; fragment[COORD_TEXT_BLEND] = "coordTextBlend-frag.glsl";
 	for(size_t i=0; i<vertex.size();i++){
 		unsigned int program;
 		if (!Shader::createProgram(&program, "shaders/"+vertex[i], "shaders/"+fragment[i])) { //ocorreu erro na criação do programa ??
@@ -146,20 +146,49 @@ int main(void) {
 	// objetoCorVertice.setPosition(Vector3f(-5.0f, 1.0f, -3.0f));
 	// scene->getSeneObjects()->push_back(objetoCorVertice);
 
+
+
+	ReadPLYWtexture(objects,&vtsVerticePtr,&vtsTexturePtr,"TrabalhoCasaFundacao", Vector3f(0.0f,0.0f,0.0f));
+
+	ReadPLYWtexture(objects,&vtsVerticePtr,&vtsTexturePtr,"TrabalhoCasaFundacao2", Vector3f(0.0f,0.0f,0.0f));
+
+	ReadPLYWtexture(objects,&vtsVerticePtr,&vtsTexturePtr,"TrabalhoCasaParedes", Vector3f(0.0f,0.0f,0.0f));
+
+	ReadPLYWtexture(objects,&vtsVerticePtr,&vtsTexturePtr,"TrabalhoCasaPiso", Vector3f(0.0f,0.0f,0.0f));
+	ReadPLYWtexture(objects,&vtsVerticePtr,&vtsTexturePtr,"TrabalhoCasaPiso2", Vector3f(0.0f,0.0f,0.0f));
+
+	ReadPLYWtexture(objects,&vtsVerticePtr,&vtsTexturePtr,"TrabalhoCasaEscada", Vector3f(0.0f,0.0f,0.0f));
+	ReadPLYWtexture(objects,&vtsVerticePtr,&vtsTexturePtr,"TrabalhoCasaEscrivaninha", Vector3f(0.0f,0.0f,0.0f));
+
+	ReadPLYWtexture(objects,&vtsVerticePtr,&vtsTexturePtr,"TrabalhoCasaEstoque", Vector3f(0.0f,0.0f,0.0f));
+	ReadPLYWtexture(objects,&vtsVerticePtr,&vtsTexturePtr,"TrabalhoCasaEstoque1", Vector3f(0.0f,0.0f,0.0f));
+	ReadPLYWtexture(objects,&vtsVerticePtr,&vtsTexturePtr,"TrabalhoCasaEstoque2", Vector3f(0.0f,0.0f,0.0f));
+	ReadPLYWtexture(objects,&vtsVerticePtr,&vtsTexturePtr,"TrabalhoCasaEstoque3", Vector3f(0.0f,0.0f,0.0f));
+	ReadPLYWtexture(objects,&vtsVerticePtr,&vtsTexturePtr,"TrabalhoCasaEstante", Vector3f(0.0f,0.0f,0.0f));
+	ReadPLYWtexture(objects,&vtsVerticePtr,&vtsTexturePtr,"TrabalhoCasaParedes2", Vector3f(0.0f,0.0f,0.0f));
+
+
+	ReadPLYWtexture(objects,&vtsVerticePtr,&vtsTexturePtr,"TrabalhoCasaMesa", Vector3f(0.0f,0.0f,0.0f));
+
+	ReadPLYWtexture(objects,&vtsVerticePtr,&vtsTexturePtr,"TrabalhoCasaCadeira", Vector3f(0.0f,0.0f,0.0f));
+	ReadPLYWtexture(objects,&vtsVerticePtr,&vtsTexturePtr,"TrabalhoCasaBanco", Vector3f(0.0f,0.0f,0.0f));
+	ReadPLYWtexture(objects,&vtsVerticePtr,&vtsTexturePtr,"TrabalhoCasaTeto", Vector3f(0.0f,0.0f,0.0f));
+
 	ObjectArray objetoTextura1;
 	objetoTextura1.create(vertices, vtsVerticePtr, texture, vtsTexturePtr);
-	objetoTextura1.setPosition(Vector3f(-2.5f, 1.0f, -3.0f));
-	objetoTextura1.setTexture("../textures/maca.jpg", false, false, false);
+	objetoTextura1.setPosition(Vector3f(-2.5f, 0.2f, -3.0f));
+	objetoTextura1.setTexture("../textures/MinecraftGrass.png", true, true, true);
+	
+	objetoTextura1.setScale(Vector3f(0.5f,0.5f,0.5f) );
 	scene->getSeneObjects()->push_back(objetoTextura1);
 
-	ReadPLYWtexture(objects,&vtsVerticePtr,&vtsTexturePtr,"casa-chao", Vector3f(0.0f,0.0f,0.0f));
-
-	ReadPLYWtexture(objects,&vtsVerticePtr,&vtsTexturePtr,"casa-parede", Vector3f(0.0f,0.0f,0.0f));
-
-	ReadPLYWtexture(objects,&vtsVerticePtr,&vtsTexturePtr,"casa-teto", Vector3f(0.0f,0.0f,0.0f));
-
-	ReadPLYWtexture(objects,&vtsVerticePtr,&vtsTexturePtr,"Wood_Table", Vector3f(0.0f,0.0f,0.0f));
-
+	ObjectArray objetoTextura2;
+	objetoTextura2.create(vertices, vtsVerticePtr, texture, vtsTexturePtr);
+	objetoTextura2.setPosition(Vector3f(-2.5f, 0.2f, -3.0f));
+	objetoTextura2.setTexture("../textures/MinecraftGrass.png", true, true, true);
+	objetoTextura2.setRotation(Math::yRotationMat(1.57));
+	objetoTextura2.setScale(Vector3f(0.5f,0.5f,0.5f));
+	scene->getSeneObjects()->push_back(objetoTextura2);
 	// ObjectArray objetoTextura2;
 	// objetoTextura2.create(vertices, vtsVerticePtr, texture, vtsTexturePtr);
 	// objetoTextura2.setPosition(Vector3f(0.0f, 1.0f, -3.0f));
@@ -328,11 +357,11 @@ bool isOpenWindow(){
 void beforeRender(){
 	//Limpa os buffers que armazenam os valores de pronfundidade de cada fragmento para seu valor inicial (1.0)
 	//Caso isso não seja feito, os fragmentos de novos triângulos serão comparados com os fragmentos renderizados do quadro anterior!
-	glClear(GL_DEPTH_BUFFER_BIT);
+	// glClear(GL_DEPTH_BUFFER_BIT);
 
-	//Limpa os buffers que armazenam os valores de cor
-	glClear(GL_COLOR_BUFFER_BIT);
-
+	// //Limpa os buffers que armazenam os valores de cor
+	// glClear(GL_COLOR_BUFFER_BIT);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	double lastTime = Scene::getInstance()->getLastTime();
 	double RTF = glfwGetTime() - lastTime;
@@ -397,6 +426,10 @@ void render(){
 				program = Scene::getInstance()->getSeneShaderPrograms()->at(COORD_COLOR);
 				glUseProgram(program);
 			}
+			else if(objects->at(i).getType()==COORD_TEXT_BLEND){
+				program = Scene::getInstance()->getSeneShaderPrograms()->at(COORD_TEXT_BLEND);
+				glUseProgram(program);
+			}
 			else if(objects->at(i).getType()==COORD_TEXT){
 				program = Scene::getInstance()->getSeneShaderPrograms()->at(COORD_TEXT);
 				glUseProgram(program);
@@ -416,7 +449,7 @@ void render(){
 
 
 			matPVMRef = glGetUniformLocation(program, "PVM");
-			matPVM = PV * objects->at(i).getTranslation() * objects->at(i).getRotation();
+			matPVM = PV * objects->at(i).getTranslation() * objects->at(i).getRotation() * objects->at(i).getScaleMat();
 			glUniformMatrix4fv(matPVMRef, 1, GL_FALSE, matPVM.data());
 			objects->at(i).render();
 
@@ -440,6 +473,8 @@ void render(){
 		//somenteTexto |= ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoInputs
 
 
+		if(!Scene::getInstance()->getCamera()->getAtivarCamera()){
+
 		ImGui::Begin("Título da janela", nullptr, somenteTexto); //cria uma janela
 		ImGui::SetWindowPos(ImVec2(0,0)); //posição
 		ImGui::Text("FPS: %.1f",  ImGui::GetIO().Framerate);
@@ -452,6 +487,9 @@ void render(){
 		ImGui::SliderFloat("Camera Mov Speed", &movFactor, 0.0f, 100.0f);
 		ImGui::SliderFloat("Camera Rot Speed", &rotFactor, 0.0f, 10.0f);
 		ImGui::End(); //finaliza a criação da janela
+		
+		}
+		
 
 
 		Scene::getInstance()->getCamera()->setFactor(  movFactor * 100.0f * Scene::getInstance()->getRTF());
@@ -476,8 +514,8 @@ void initOpenGL(){
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, scene->getGlslMajorVersion());
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, scene->getGlslMinorVersion());
 	glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
+	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-	
 	GLFWwindow* window;
 	if(scene->isFullscreen()){ //tela cheia ?
 		const GLFWvidmode* mode = glfwGetVideoMode(glfwGetPrimaryMonitor());
@@ -486,7 +524,7 @@ void initOpenGL(){
 		glfwWindowHint(GLFW_GREEN_BITS, mode->greenBits);
 		glfwWindowHint(GLFW_BLUE_BITS, mode->blueBits);
 		glfwWindowHint(GLFW_REFRESH_RATE, mode->refreshRate);
-
+ 		
 		//cout << mode->redBits << endl;
 		//cout << mode->greenBits << endl;
 		//cout << mode->blueBits << endl;
@@ -539,7 +577,7 @@ void initOpenGL(){
 	//define qual algoritmo sera usado para comparar os valores de profundidade dentro do fragment shader
 	//https://www.khronos.org/registry/OpenGL-Refpages/gl4/html/glDepthFunc.xhtml
 	//glDepthFunc(GL_LEQUAL);
-	glDepthFunc(GL_LESS);
+	// glDepthFunc(GL_LESS);
 
 
 	//IMGUI -> inicializar
@@ -643,16 +681,9 @@ void ReadPLYWtexture(std::vector<ObjectArray> *objects, unsigned int *vtsVertice
 	// 	objPLYWcolor.setEscale(Vector3f(0.4f,0.4f,0.4f));
 	// }
 	// objects->push_back(objPLYWcolor); //add 
-		cout<<"vertices:"<<endl;
-		cout<< auxV[0]<<endl;
-		cout<<"textures:"<<endl;
-		cout << texture[0]<<endl;
 
-
-	string textureName = "../textures/" +nomeImagem+".jpg";
-	cout<<"textureName: ";
-	cout<<textureName<<endl;
-
+	string textureName = "../textures/" +nomeImagem+".png";
+	// bool hasAlpha = false;
 	ObjectArray objetoTextura;
 	objetoTextura.create(vertices, *vtsVerticePtr, texture, *vtsTexturePtr);
 	objetoTextura.setPosition(position);

@@ -18,6 +18,7 @@ ObjectArray::ObjectArray(){
 	colorVBO = 0;
 	texturePtr1 = 0;
 	texturePtr2 = 0;
+	hasAlpha=false;
 
 }
 
@@ -50,6 +51,7 @@ void ObjectArray::deleteAll(){
 	colorVBO = 0;
 	texturePtr1 = 0;
 	texturePtr2 = 0;
+	hasAlpha=false;
 }
 
 void ObjectArray::create(vector<Vector3f> vertices, unsigned int vtsVerticePtr, vector<Vector2f> texture, unsigned int vtsTexturePtr, vector<Vector3f> colors, unsigned int vtsColorsPtr){
@@ -58,7 +60,7 @@ void ObjectArray::create(vector<Vector3f> vertices, unsigned int vtsVerticePtr, 
         cout << "Erro ObjectArray::create: nao ha vertices!"<< endl;
         return;            
     }
-
+	hasAlpha=false;
 	nVertices = vertices.size();
 
     //Cria o Vertex Array Object (VAO). Ele vai armazenar as informações do buffer e como este buffer será acessado no vertex shader
@@ -118,6 +120,10 @@ void ObjectArray::render(){
 		glBindTexture(GL_TEXTURE_2D, texturePtr2);
 	}
 	
+	if(hasAlpha){
+		glEnable(GL_BLEND);
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);  
+	}
 
 	//Ativa o array de vertices e cor
 	glBindVertexArray(VAO);
@@ -130,6 +136,10 @@ void ObjectArray::render(){
 	glBindTexture(GL_TEXTURE_2D, 0);
 	glActiveTexture(GL_TEXTURE0);
 
+	if(hasAlpha){
+		glDisable(GL_BLEND);
+	}
+
 }
 
 void ObjectArray::setTexture(std::string texPath, bool verticalFlip, bool mipmap, bool anisotropicFilter){
@@ -138,8 +148,13 @@ void ObjectArray::setTexture(std::string texPath, bool verticalFlip, bool mipmap
         return;            
     }
 
+	cout<< "has alpha? "<<hasAlpha<<endl;
+
+	// bool *testAlpha = &hasAlpha;
     //textura
-    Texture::loadOpenGLTexture(texPath, texturePtr1, verticalFlip, mipmap, anisotropicFilter);
+    Texture::loadOpenGLTexture(texPath, texturePtr1, &hasAlpha, verticalFlip, mipmap, anisotropicFilter);
+	
+
 }
     
 	
@@ -149,9 +164,14 @@ void ObjectArray::setTexture(std::string texPath1, std::string texPath2, bool ve
         cout << "Erro ObjectArray::setTexture: o objeto nao possui coordenadas de textura!"<< endl;
         return;            
     }
-
-	Texture::loadOpenGLTexture(texPath1, texturePtr1, verticalFlip, mipmap, anisotropicFilter);
-	Texture::loadOpenGLTexture(texPath2, texturePtr2, verticalFlip, mipmap, anisotropicFilter);
+	
+	cout<< "has alpha? "<<hasAlpha<<endl;
+	
+	// bool *testAlpha = &hasAlpha;
+	Texture::loadOpenGLTexture(texPath1, texturePtr1, &hasAlpha, verticalFlip, mipmap, anisotropicFilter);
+	Texture::loadOpenGLTexture(texPath2, texturePtr2, &hasAlpha, verticalFlip, mipmap, anisotropicFilter);
+	// Texture::loadOpenGLTexture(texPath1, texturePtr1, verticalFlip, mipmap, anisotropicFilter);
+	// Texture::loadOpenGLTexture(texPath2, texturePtr2, verticalFlip, mipmap, anisotropicFilter);
 }
 
 int ObjectArray::getType(){
@@ -159,6 +179,8 @@ int ObjectArray::getType(){
 		return OBJECT_TYPE::COORD_MULTI_TEXT;
 	else if(texturePtr1 && colorVBO)
 		return OBJECT_TYPE::COORD_TEXT_COLOR;
+	else if(texturePtr1 && getAlpha())
+		return OBJECT_TYPE::COORD_TEXT_BLEND;
 	else if(texturePtr1)
 		return OBJECT_TYPE::COORD_TEXT;
 	else if(colorVBO)
@@ -167,6 +189,10 @@ int ObjectArray::getType(){
 		return OBJECT_TYPE::COORD;
 }
 
+
+bool ObjectArray::getAlpha(){
+	return hasAlpha;
+}
 
 void ObjectArray::getPlane(std::vector<Eigen::Vector3f> &vertices, std::vector<Eigen::Vector2f> &texture){
 

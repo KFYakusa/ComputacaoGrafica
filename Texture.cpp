@@ -13,14 +13,15 @@ Texture::Texture(){
 }
 
 
-
-bool Texture::loadOpenGLTexture(std::string path, unsigned int &texturePtr, bool verticalFlip, bool mipmap, bool anisotropicFilter){
+bool Texture::loadOpenGLTexture(std::string path, unsigned int &texturePtr,bool *alpha, bool verticalFlip, bool mipmap, bool anisotropicFilter){
     int width; 
     int height;
     int channels;
-
+    
+    
+    
     //le os valores dos pixels da imagem, forcando para o o formato RGB
-    unsigned char* imgData = SOIL_load_image(path.c_str(), &width, &height, &channels, SOIL_LOAD_RGB);
+    unsigned char* imgData = SOIL_load_image(path.c_str(), &width, &height, &channels, SOIL_LOAD_AUTO);
 	if (!imgData){
         cout << "Erro Texture: Erro ao ler o arquivo " << path << endl;
         return false;
@@ -49,15 +50,26 @@ bool Texture::loadOpenGLTexture(std::string path, unsigned int &texturePtr, bool
         format = GL_RED;
     else if (channels == 3)
         format = GL_RGB;
-    else if (channels == 4)
+    else if (channels == 4){
         format = GL_RGBA;
-
+        *alpha =true;
+    }
+        
+    std::cout<< "( inside loadOpenGLTexture )has alpha? "<< (*alpha)<<endl;
+    std::cout<<" nome textura: "<<path<<endl;
     //gera um ponteiro para a texura e carrega a imagem na GPU
     glGenTextures(1, &texturePtr);
     glBindTexture(GL_TEXTURE_2D, texturePtr);
     glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, imgData);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    // if(*alpha)
+    // {
+    //     glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);	
+    //     glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE); 
+    // }
+    // else{
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    // }
 
     //Ativar mipmap?
     if(mipmap){
@@ -82,11 +94,20 @@ bool Texture::loadOpenGLTexture(std::string path, unsigned int &texturePtr, bool
         //cout << "anisoset: " << anisoset << endl;
 	}
 
-
-
-
     //libera memoria
 	glBindTexture(GL_TEXTURE_2D, 0);
     SOIL_free_image_data( imgData );
 	return true;
 }
+
+
+
+
+
+
+
+
+
+
+
+
